@@ -2,9 +2,9 @@
 # 
 #PBS -A UQ-CAI
 #PBS -V
-#PBS -N antsLCT_pbs_script_2TP
-#PBS -l select=1:ncpus=20:mem=80GB:vmem=80GB,walltime=100:00:00
+#PBS -N antsLCT_pbs_script
+#PBS -l select=1:ncpus=20:mem=80GB:vmem=80GB,walltime=80:00:00
 
 #Now do some things
 source ~/.bashrc
-~/scripts/OPTIMEX/3_ANTSLCT/antsLCT_script_2TP.sh $SUBJNAME
+~/scripts/STIMMRI/antsLCTScript.sh $SUBJNAME
