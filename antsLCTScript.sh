@@ -15,12 +15,20 @@ cd /30days/$USER/STIMMRI/alct/$subjName
 atlas_dir="/30days/uqtshaw/STIMMRI_ATLAS"
 
 #ANTS LCT 3TP
-antsLongitudinalCorticalThickness.sh -d 3 -e ${atlas_dir}/STIMMRI_T1w_template0.nii.gz -m ${atlas_dir}/antsCTBrainExtractionMaskProbabilityMask.nii.gz \
+antsLongitudinalCorticalThickness.sh -d 3 \
+-e ${atlas_dir}/STIMMRI_T1w_template0.nii.gz \
+-m ${atlas_dir}/antsCTBrainExtractionMaskProbabilityMask.nii.gz \
 -p ${atlas_dir}/antsCTBrainSegmentationPosteriors%d.nii.gz \
--f ${atlas_dir}cai63_asym_2017_nlin_TempAndPriors/cai63_asym_2017_nlin_BrainExtractionMask.nii.gz \
--t cai63_asym_2017_nlin_TempAndPriors/cai63_asym_2017_nlin_Extracted_Brain.nii.gz \
--o ${subjName}lct_3_timepoints \
--k '2' -c '2' -j '16' -r '1' -q '0' -n '1' -b '1' \
+-f ${atlas_dir}/antsCTBrainExtractionMask.nii.gz \
+-t ${atlas_dir}/antsCTBrainExtractionBrain.nii.gz \
+-o ${subjName}_long_cortical_thickness \
+-k '2' \
+-c '2' \
+-j '10' \
+-r '1' \
+-q '0' \
+-n '1' \ 
+-b '1' \
 ${subjName}_ses-01_T1w_N4corrected_norm_preproc.nii.gz ${subjName}_ses-01_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz \
 ${subjName}_ses-06_T1w_N4corrected_norm_preproc.nii.gz ${subjName}_ses-06_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz \
 ${subjName}_ses-12_T1w_N4corrected_norm_preproc.nii.gz ${subjName}_ses-12_T2w_NlinMoCo_res-iso.3_N4corrected_denoised_brain_preproc.nii.gz
