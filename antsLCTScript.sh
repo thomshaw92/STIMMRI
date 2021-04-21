@@ -31,7 +31,7 @@ if [[ ! -d /30days/uqtshaw/STIMMRI/alct/${subjName}/${subjName}_long_cortical_th
     -o ${subjName}_long_cortical_thickness \
     -k '1' \
     -c '2' \
-    -j '10' \
+    -j '14' \
     -r '1' \
     -q '0' \
     -n '1' \
@@ -41,17 +41,17 @@ fi
 
 #JLF the data
 
-for TP in 01 02 03 ; do 
-
-atlasDir=/30days/uqtshaw/mindboggle_all_data
-target_image=$(echo "${output_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
-
-command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt -c 2 -j 14" 
-
-for i in {1..20}; 
-  do
-    command="${command} -g ${atlasDir}/OASIS-TRT-20_volumes/OASIS-TRT-20-${i}/t1weighted_brain.nii.gz"
-    command="${command} -l ${atlasDir}/OASIS-TRT-20_DKT31_CMA_labels_v2/OASIS-TRT-20-${i}_DKT31_CMA_labels.nii.gz"
-  done
- 
- $command
+for TP in 01 02 03 ; do
+    
+    atlasDir=/30days/uqtshaw/mindboggle_all_data
+    target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
+    
+    command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt -c 2 -j 8"
+    
+    for i in {1..20} ;  do
+        command="${command} -g ${atlasDir}/OASIS-TRT-20_volumes/OASIS-TRT-20-${i}/t1weighted_brain.nii.gz"
+        command="${command} -l ${atlasDir}/OASIS-TRT-20_DKT31_CMA_labels_v2/OASIS-TRT-20-${i}_DKT31_CMA_labels.nii.gz"
+    done
+    
+    $command
+done
