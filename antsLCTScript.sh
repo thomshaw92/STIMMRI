@@ -42,7 +42,10 @@ fi
 #JLF the data
 
 for TP in 01 02 03 ; do
-    
+    outdir_JLF=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/DKT_JLF")
+    echo ${outdir_JLF}
+    mkdir ${outdir_JLF}
+    cd ${outdir_JLF}
     atlasDir=/30days/uqtshaw/mindboggle_all_data
     target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
     
@@ -55,3 +58,4 @@ for TP in 01 02 03 ; do
     
     $command
 done
+
