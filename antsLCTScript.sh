@@ -42,20 +42,22 @@ fi
 #JLF the data
 
 for TP in 01 02 03 ; do
-    outdir_JLF=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/DKT_JLF")
-    echo ${outdir_JLF}
-    mkdir ${outdir_JLF}
+    
+    outdir_JLF=$(echo "${out_dir}/${subjName}_ses-${TP}_*")
     cd ${outdir_JLF}
+    mkdir -p DKT
+    cd DKT
     atlasDir=/30days/uqtshaw/mindboggle_all_data
     target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
-    
-    command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt -c 2 -j 8"
-    
-    for i in {1..20} ;  do
-        command="${command} -g ${atlasDir}/OASIS-TRT-20_volumes/OASIS-TRT-20-${i}/t1weighted_brain.nii.gz"
-        command="${command} -l ${atlasDir}/OASIS-TRT-20_DKT31_CMA_labels_v2/OASIS-TRT-20-${i}_DKT31_CMA_labels.nii.gz"
-    done
-    
-    $command
+    if [[ -e ${target_image} ]] ; then
+        command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt_${TP} -c 2 -j 8"
+        
+        for i in {1..20} ;  do
+            command="${command} -g ${atlasDir}/OASIS-TRT-20_volumes/OASIS-TRT-20-${i}/t1weighted_brain.nii.gz"
+            command="${command} -l ${atlasDir}/OASIS-TRT-20_DKT31_CMA_labels_v2/OASIS-TRT-20-${i}_DKT31_CMA_labels.nii.gz"
+        done
+        
+        $command
+    fi
 done
 
