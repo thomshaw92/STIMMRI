@@ -42,8 +42,8 @@ fi
 #JLF the data
 
 for TP in 01 02 03 ; do
-    
-    outdir_JLF=$(echo "${out_dir}/${subjName}_ses-${TP}_*")
+    shopt -s globstar
+    outdir_JLF=${out_dir}/${subjName}_ses-${TP}_**/
     cd ${outdir_JLF}
     mkdir -p DKT
     cd DKT
