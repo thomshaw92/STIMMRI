@@ -42,11 +42,9 @@ fi
 #JLF the data
 
 for TP in 01 02 03 ; do
-    shopt -s globstar
-    outdir_JLF=${out_dir}/${subjName}_ses-${TP}_**/
+outdir_JLF=/30days/$USER/STIMMRI/alct/$subjName}/${subjName}_ses-${TP}/
+    mkdir -p ${outdir_JLF}
     cd ${outdir_JLF}
-    mkdir -p DKT
-    cd DKT
     atlasDir=/30days/uqtshaw/mindboggle_all_data
     target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
     if [[ -e ${target_image} ]] ; then
