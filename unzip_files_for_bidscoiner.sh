@@ -12,8 +12,6 @@ for x in {001..250}  ; do #or however many participants you have in raw_dir
             cd ${raw_dir}/sub-${x}/ses-${ses}
             for file in *zip ; do
                 unzip ${file} -d ${file:0:-4}
-                rm -rf ${file}
             done
         fi
     done
-done
