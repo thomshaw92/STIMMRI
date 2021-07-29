@@ -42,7 +42,7 @@ fi
 #JLF the data
 
 for TP in 01 02 03 ; do
-outdir_JLF=/30days/$USER/STIMMRI/alct/$subjName}/${subjName}_ses-${TP}/
+outdir_JLF=/30days/$USER/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF/
     mkdir -p ${outdir_JLF}
     cd ${outdir_JLF}
     atlasDir=/30days/uqtshaw/mindboggle_all_data
