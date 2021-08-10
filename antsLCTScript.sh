@@ -9,19 +9,20 @@
 subjName=$1
 #singularity="singularity exec --bind /30days:/30days/ /home/uqtshaw/ants_2.3.4.sif"
 #module load singularity
-mkdir -p /30days/$USER/STIMMRI/alct/$subjName
-cd /30days/$USER/STIMMRI/alct/$subjName
+scratch="/scratch/user/$USER/"
+mkdir -p ${scratch}/STIMMRI/alct/${subjName}
+cd ${scratch}/STIMMRI/alct/${subjName}
 
-data_dir="/30days/uqtshaw/STIMMRI_BIDS"
-atlas_dir="/30days/uqtshaw/STIMMRI_ATLAS"
-out_dir="/30days/$USER/STIMMRI/alct/$subjName/${subjName}_long_cortical_thickness"
+data_dir="/RDS/Q1876/data/bids/STIMMRI_BIDS/"
+atlas_dir="/home/${USER}/STIMMRI_ATLAS"
+out_dir="${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness"
 
 tp_1_t1w=$(echo "${data_dir}/${subjName}/ses-01/anat/${subjName}"*"T1w.nii.gz")
 tp_2_t1w=$(echo "${data_dir}/${subjName}/ses-02/anat/${subjName}"*"T1w.nii.gz")
 tp_3_t1w=$(echo "${data_dir}/${subjName}/ses-03/anat/${subjName}"*"T1w.nii.gz")
 
 #ANTS LCT 3TP
-if [[ ! -d /30days/uqtshaw/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness ]] ; then
+if [[ ! -d ${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness ]] ; then
     antsLongitudinalCorticalThickness.sh -d 3 \
     -e ${atlas_dir}/STIMMRI_T1w_template0.nii.gz \
     -m ${atlas_dir}/antsCTBrainExtractionMaskProbabilityMask.nii.gz \
@@ -42,10 +43,10 @@ fi
 #JLF the data
 
 for TP in 01 02 03 ; do
-outdir_JLF=/30days/$USER/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF/
+outdir_JLF=${scratch}/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF/
     mkdir -p ${outdir_JLF}
     cd ${outdir_JLF}
-    atlasDir=/30days/uqtshaw/mindboggle_all_data
+    atlasDir=${scratch}/mindboggle_all_data
     target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
     if [[ -e ${target_image} ]] ; then
         command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt_${TP} -c 2 -j 8"
@@ -56,6 +57,9 @@ outdir_JLF=/30days/$USER/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF/
         done
         
         $command
+        #collect some stats
+        #ImageMath 3 ${outdir_JLF}/dkt_${TP}/output_stats.txt LabelStats ${outdir_JLF}/dkt_${TP}/labelimage.ext valueimage.nii
     fi
+    
 done
 
