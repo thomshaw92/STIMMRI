@@ -22,7 +22,7 @@ tp_2_t1w=$(echo "${data_dir}/${subjName}/ses-02/anat/${subjName}"*"T1w.nii.gz")
 tp_3_t1w=$(echo "${data_dir}/${subjName}/ses-03/anat/${subjName}"*"T1w.nii.gz")
 
 #ANTS LCT 3TP
-if [[ ! -d ${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness ]] ; then
+if [[ ! -e ${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thicknessSingleSubjectTemplate/T_template0.nii.gz ]] ; then
     antsLongitudinalCorticalThickness.sh -d 3 \
     -e ${atlas_dir}/STIMMRI_T1w_template0.nii.gz \
     -m ${atlas_dir}/antsCTBrainExtractionMaskProbabilityMask.nii.gz \
@@ -36,14 +36,15 @@ if [[ ! -d ${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickne
     -r '1' \
     -q '0' \
     -n '1' \
-    -b '1' \
+    -g '1' \
+    -b '0' \
     ${tp_1_t1w} ${tp_2_t1w} ${tp_3_t1w}
 fi
 
 #JLF the data
 
 for TP in 01 02 03 ; do
-outdir_JLF=${scratch}/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF/
+outdir_JLF=${scratch}/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF
     mkdir -p ${outdir_JLF}
     cd ${outdir_JLF}
     atlasDir=${scratch}/mindboggle_all_data
