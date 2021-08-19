@@ -44,7 +44,10 @@ fi
 #JLF the data
 
 for TP in 01 02 03 ; do
+
 outdir_JLF=${scratch}/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF
+dkt_labels_image=$(echo "${outdir_JLF}/dkt_0"*"Labels.nii.gz")
+if [[ ! -e ${dkt_labels_image} ]] ; then
     mkdir -p ${outdir_JLF}
     cd ${outdir_JLF}
     atlasDir=${scratch}/mindboggle_all_data
@@ -58,9 +61,23 @@ outdir_JLF=${scratch}/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF
         done
         
         $command
-        #collect some stats
-        #ImageMath 3 ${outdir_JLF}/dkt_${TP}/output_stats.txt LabelStats ${outdir_JLF}/dkt_${TP}/labelimage.ext valueimage.nii
     fi
-    
+fi
+        ml fsl
+        #collect some stats
+        for num in 1003 1008 1012 1014 1018 1019 1020 1024 1027 1028 2003 2008 2012 2014 2018 2019 2020 2024 2027 2028 ; do
+            labelledimage="${outdir_JLF}/dkt_"*"Labels.nii.gz"
+            fslmaths ${labelledimage} -thr ${num} -uthr ${num} ${outdir_JLF}/${num}_mask.nii.gz
+            fslmaths ${outdir_JLF}/${num}_mask.nii.gz -bin ${outdir_JLF}/${num}_mask.nii.gz
+            cortical_thickness_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}*_run-1_T1wCorticalThickness.nii.gz")
+            echo "${subjName} ses-${TP} ${num}">> ${outdir_JLF}/numstats.csv
+            fslstats ${cortical_thickness_image} -k ${outdir_JLF}/${num}_mask.nii.gz -R -r -m -M >> ${outdir_JLF}/stats.csv
+            paste -d' ' ${outdir_JLF}/numstats.csv ${outdir_JLF}/stats.csv > ${outdir_JLF}/statsfile_temp.csv
+            cat ${outdir_JLF}/statsfile_temp.csv >> ${scratch}/STIMMRI/alct/statsfile.csv
+            tr -s '\t' <${scratch}/STIMMRI/alct/statsfile.csv | tr '\t' ',' >${scratch}/STIMMRI/alct/statsfilenowhite.csv
+            rm ${scratch}/STIMMRI/alct/statsfile.csv
+            mv ${scratch}/STIMMRI/alct/statsfilenowhite.csv ${scratch}/STIMMRI/alct/statsfile.csv
+            rm ${outdir_JLF}/statsfile_temp.csv ${outdir_JLF}/numstats.csv ${outdir_JLF}/stats.csv
+        done
 done
 
