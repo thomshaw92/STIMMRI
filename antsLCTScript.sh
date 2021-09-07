@@ -9,7 +9,7 @@ export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=12
 subjName=$1
 #singularity="singularity exec --bind /30days:/30days/ /home/uqtshaw/ants_2.3.4.sif"
 #module load singularity
-scratch="/scratch/user/$USER/"
+scratch="/scratch/project/uhfmri/"
 mkdir -p ${scratch}/STIMMRI/alct/${subjName}
 cd ${scratch}/STIMMRI/alct/${subjName}
 
@@ -23,28 +23,42 @@ tp_3_t1w=$(echo "${data_dir}/${subjName}/ses-03/anat/${subjName}"*"T1w.nii.gz")
 
 if [[ -e ${tp_1_t1w} && ! -e ${tp_2_t1w} && ! -e ${tp_3_t1w} ]] ; then
     inputs="${tp_1_t1w}"
+    echo "only one timepoint (TP1) exists for ${subjName}, exiting"
+    echo ${subjName}_TP1 >> ${scratch}/STIMMRI/1TP_only_log.txt
+    exit 0
 fi
 if [[ ! -e ${tp_1_t1w} && -e ${tp_2_t1w} && ! -e ${tp_3_t1w} ]] ; then
     inputs="${tp_2_t1w}"
+    echo "only one timepoint (TP1) exists for ${subjName}, exiting"
+    echo ${subjName}_TP2 >> ${scratch}/STIMMRI/1TP_only_log.txt
+    exit 0
 fi
 if [[ ! -e ${tp_1_t1w} && ! -e ${tp_2_t1w} && -e ${tp_3_t1w} ]] ; then
     inputs="${tp_3_t1w}"
+    echo "only one timepoint (TP1) exists for ${subjName}, exiting"
+    echo ${subjName}_TP3 >> ${scratch}/STIMMRI/1TP_only_log.txt
+    exit 0
 fi
 if [[ -e ${tp_1_t1w} && -e ${tp_2_t1w} && ! -e ${tp_3_t1w} ]] ; then
     inputs="${tp_1_t1w} ${tp_2_t1w}"
+    png_file=$(echo "${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-02_acq-"*"T1wCorticalThicknessTiledMosaic.png")
 fi
 if [[ -e ${tp_1_t1w} && ! -e ${tp_2_t1w} && -e ${tp_3_t1w} ]] ; then
     inputs="${tp_1_t1w} ${tp_3_t1w}"
+    png_file=$(echo "${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
 fi
 if [[ ! -e ${tp_1_t1w} && -e ${tp_2_t1w} && -e ${tp_3_t1w} ]] ; then
     inputs="${tp_2_t1w} ${tp_3_t1w}"
+    png_file=$(echo "${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
 fi
 if [[ -e ${tp_1_t1w} && -e ${tp_2_t1w} && -e ${tp_3_t1w} ]] ; then
     inputs="${tp_1_t1w} ${tp_2_t1w} ${tp_3_t1w}"
+    png_file=$(echo "${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
 fi
 
 #ANTS LCT 3TP
-if [[ ! -e ${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thicknessSingleSubjectTemplate/T_template0.nii.gz ]] ; then
+
+if [[ ! -e ${png_file} ]] ; then
     antsLongitudinalCorticalThickness.sh -d 3 \
 	-e ${atlas_dir}/STIMMRI_T1w_template0.nii.gz \
 	-m ${atlas_dir}/antsCTBrainExtractionMaskProbabilityMask.nii.gz \
@@ -95,8 +109,8 @@ for TP in 01 02 03 ; do
         echo "${subjName} ses-${TP} ${num}">> ${outdir_JLF}/numstats.csv
 	#the stats are going to be min intensity, max intensity, mean of nonzero values, SD of nonzeroes
         fslstats ${cortical_thickness_image} -k ${outdir_JLF}/${num}_mask.nii.gz -l 0.01 -R -M -S >> ${outdir_JLF}/stats.csv
-	    LabelGeometryMeasures 3  ${outdir_JLF}/${num}_mask.nii.gz [intensityImage=none] ${outdir_JLF}/stats_ants.csv
-        paste -d' ' ${outdir_JLF}/numstats.csv ${outdir_JLF}/stats.csv ${outdir_JLF}/stats_ants.csv > ${outdir_JLF}/statsfile_temp.csv
+	    #LabelGeometryMeasures 3  ${outdir_JLF}/${num}_mask.nii.gz [intensityImage=none] ${outdir_JLF}/stats_ants.csv
+        paste -d' ' ${outdir_JLF}/numstats.csv ${outdir_JLF}/stats.csv > ${outdir_JLF}/statsfile_temp.csv
         cat ${outdir_JLF}/statsfile_temp.csv >> ${scratch}/STIMMRI/alct/statsfile.csv
         tr -s '\t' <${scratch}/STIMMRI/alct/statsfile.csv | tr '\t' ',' >${scratch}/STIMMRI/alct/statsfilenowhite.csv
         #rm ${scratch}/STIMMRI/alct/statsfile.csv
