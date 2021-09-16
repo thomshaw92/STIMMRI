@@ -5,6 +5,8 @@
 #Tom Shaw 31/03/2021
 
 #Will run on HPCs - PBS
+#bring the BIDS t1ws down from RDM
+#rsync -v -a --prune-empty-dirs --include '*/' --include '*T1w.nii.gz' --exclude '*' ../STIMMRI_BIDS/ /scratch/project/uhfmri/STIMMRI/
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=12
 subjName=$1
 #singularity="singularity exec --bind /30days:/30days/ /home/uqtshaw/ants_2.3.4.sif"
@@ -13,7 +15,7 @@ scratch="/scratch/project/uhfmri/"
 mkdir -p ${scratch}/STIMMRI/alct/${subjName}
 cd ${scratch}/STIMMRI/alct/${subjName}
 
-data_dir="/RDS/Q1876/data/bids/STIMMRI_BIDS/"
+data_dir="/scratch/project/uhfmri/STIMMRI/STIMMRI_BIDS/"
 atlas_dir="/home/${USER}/STIMMRI_ATLAS"
 out_dir="${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness"
 
