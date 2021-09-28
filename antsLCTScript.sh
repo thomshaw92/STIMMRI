@@ -86,25 +86,25 @@ for TP in 01 02 03 ; do
     outdir_JLF=${scratch}/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF
     dkt_labels_image=$(echo "${outdir_JLF}/dkt_0"*"Labels.nii.gz")
     if [[ ! -e ${dkt_labels_image} ]] ; then
-	mkdir -p ${outdir_JLF}
-	cd ${outdir_JLF}
-	atlasDir=${scratch}/mindboggle_all_data
-	target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
-	if [[ -e ${target_image} ]] ; then
+	    mkdir -p ${outdir_JLF}
+	    cd ${outdir_JLF}
+	    atlasDir=${scratch}/mindboggle_all_data
+	    target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
+	    if [[ -e ${target_image} ]] ; then
             command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt_${TP} -c 2 -j 8"
             
             for i in {1..20} ;  do
-		command="${command} -g ${atlasDir}/OASIS-TRT-20_volumes/OASIS-TRT-20-${i}/t1weighted_brain.nii.gz"
-		command="${command} -l ${atlasDir}/OASIS-TRT-20_DKT31_CMA_labels_v2/OASIS-TRT-20-${i}_DKT31_CMA_labels.nii.gz"
+		        command="${command} -g ${atlasDir}/OASIS-TRT-20_volumes/OASIS-TRT-20-${i}/t1weighted_brain.nii.gz"
+		        command="${command} -l ${atlasDir}/OASIS-TRT-20_DKT31_CMA_labels_v2/OASIS-TRT-20-${i}_DKT31_CMA_labels.nii.gz"
             done
             
             $command
-	fi
+	    fi
     fi
     ml fsl
     #collect some stats
     for num in 1003 1008 1012 1014 1018 1019 1020 1024 1027 1028 2003 2008 2012 2014 2018 2019 2020 2024 2027 2028 ; do
-        labelledimage="${outdir_JLF}/dkt_"*"Labels.nii.gz"
+        labelledimage=$(echo "${outdir_JLF}/dkt_"*"Labels.nii.gz")
         fslmaths ${labelledimage} -thr ${num} -uthr ${num} ${outdir_JLF}/${num}_mask.nii.gz
         fslmaths ${outdir_JLF}/${num}_mask.nii.gz -bin ${outdir_JLF}/${num}_mask.nii.gz
         cortical_thickness_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}*_run-1_T1wCorticalThickness.nii.gz")
@@ -120,4 +120,3 @@ for TP in 01 02 03 ; do
         rm ${outdir_JLF}/statsfile_temp.csv ${outdir_JLF}/numstats.csv ${outdir_JLF}/stats.csv
     done
 done
-
