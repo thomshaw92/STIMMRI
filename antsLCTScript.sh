@@ -7,7 +7,7 @@
 #Will run on HPCs - PBS
 #bring the BIDS t1ws down from RDM
 #rsync -v -a --prune-empty-dirs --include '*/' --include '*T1w.nii.gz' --exclude '*' ../STIMMRI_BIDS/ /scratch/project/uhfmri/STIMMRI/
-export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=12
+export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=8
 subjName=$1
 #singularity="singularity exec --bind /30days:/30days/ /home/uqtshaw/ants_2.3.4.sif"
 #module load singularity
@@ -91,7 +91,7 @@ for TP in 01 02 03 ; do
 	    atlasDir=${scratch}/mindboggle_all_data
 	    target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
 	    if [[ -e ${target_image} ]] ; then
-            command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt_${TP} -c 2 -j 8"
+            command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt_${TP} -c 2 -j 4"
             
             for i in {1..20} ;  do
 		        command="${command} -g ${atlasDir}/OASIS-TRT-20_volumes/OASIS-TRT-20-${i}/t1weighted_brain.nii.gz"
