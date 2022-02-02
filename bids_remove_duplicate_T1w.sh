@@ -11,12 +11,12 @@ for file in `find . -type f -printf '%h\n' | sort | uniq -d ` ; do echo $file &&
 ##start removing files
 #remove all with ND and MP2rage only
 
-for subjname in 126 129 130 131 132 134 137 138 140 141 142 143 144 145 146 147 157 158 161 162 163 164 165 167 168 169 170 ; do
+for subjname in 126 129 130 131 132 134 137 138 140 141 142 143 144 145 146 147 157 158 161 162 163 164 165 167 168 169 170 174 175 177 179 180 181 182 183 184 185 186 189 191 192 194 195 196 197 198 199 200; do
     rm ./sub-${subjname}/ses*/anat/*ND*T1w.*
 done
 
 ##remove non RR ones that needed RR I guess?
-for subjname in 108 103 114 126 131 132 135 136 139 140 141 142 143 144 146 147 148 150 151 152 153 154 155 156 157 158 159 161 160 162 163 164 165 168 170 ; do
+for subjname in 108 103 114 126 131 132 135 136 139 140 141 142 143 144 146 147 148 150 151 152 153 154 155 156 157 158 159 161 160 162 163 164 165 168 170 174 176 178 179 185 186 187 188 189 190 191 194 195; do
     rm ./sub-${subjname}/ses*/anat/*75mmUNIDEN*T1w.*
 done
 #103 didn't work because the protocol changed
