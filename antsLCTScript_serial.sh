@@ -24,6 +24,7 @@ for subjName in `cat /30days/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames.csv` ; do
     tp_1_t1w=$(echo "${data_dir}/${subjName}/ses-01/anat/${subjName}"*"T1w.nii.gz")
     tp_2_t1w=$(echo "${data_dir}/${subjName}/ses-02/anat/${subjName}"*"T1w.nii.gz")
     tp_3_t1w=$(echo "${data_dir}/${subjName}/ses-03/anat/${subjName}"*"T1w.nii.gz")
+    
 
     if [[ -e ${tp_1_t1w} && ! -e ${tp_2_t1w} && ! -e ${tp_3_t1w} ]] ; then
 	inputs="${tp_1_t1w}"
@@ -100,25 +101,29 @@ for subjName in `cat /30days/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames.csv` ; do
 		$command
 	    fi
 	fi
+       	ml fsl
+	#collect some stats - add extra regions
 	
-
-	ml fsl
-	#collect some stats
-	for num in 1003 1008 1012 1014 1018 1019 1020 1024 1027 1028 2003 2008 2012 2014 2018 2019 2020 2024 2027 2028 ; do
+	for num in 1002 1003 1005 1006 1007 1008 1009 1010 1011 1012 1013 1014 1015 1016 1017 1018 1019 1020 1021 1022 1023 1025 1026 1027 1028 1029 1030 1031 1034 1035 2002 2003 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2034 2035 ; do
 	    labelledimage=$(echo "${outdir_JLF}/dkt_${TP}Labels.nii.gz")
 	    fslmaths ${labelledimage} -thr ${num} -uthr ${num} ${outdir_JLF}/${num}_mask.nii.gz
 	    fslmaths ${outdir_JLF}/${num}_mask.nii.gz -bin ${outdir_JLF}/${num}_mask.nii.gz
 	    cortical_thickness_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}*_run-1_T1wCorticalThickness.nii.gz")
-	    echo "${subjName} ses-${TP} ${num}">> ${outdir_JLF}/numstats.csv
+	    #echo "${subjName} ses-${TP} ${num}">> ${outdir_JLF}/numstats.csv
 	    #the stats are going to be min intensity, max intensity, mean of nonzero values, SD of nonzeroes
-	    fslstats ${cortical_thickness_image} -k ${outdir_JLF}/${num}_mask.nii.gz -l 0.01 -R -M -S >> ${outdir_JLF}/stats.csv
+	    ##fslstats ${cortical_thickness_image} -k ${outdir_JLF}/${num}_mask.nii.gz -l 0.01 -R -M -S >> ${outdir_JLF}/stats.csv
 	    #LabelGeometryMeasures 3  ${outdir_JLF}/${num}_mask.nii.gz [intensityImage=none] ${outdir_JLF}/stats_ants.csv
-	    paste -d' ' ${outdir_JLF}/numstats.csv ${outdir_JLF}/stats.csv > ${outdir_JLF}/statsfile_temp.csv
-	    cat ${outdir_JLF}/statsfile_temp.csv >> ${scratch}/STIMMRI/alct/statsfile.csv
-	    tr -s '\t' <${scratch}/STIMMRI/alct/statsfile.csv | tr '\t' ',' >${scratch}/STIMMRI/alct/statsfilenowhite.csv
+	    ##paste -d' ' ${outdir_JLF}/numstats.csv ${outdir_JLF}/stats.csv > ${outdir_JLF}/statsfile_temp.csv
+	    ##cat ${outdir_JLF}/statsfile_temp.csv >> ${scratch}/STIMMRI/alct/statsfile.csv
+	    ##tr -s '\t' <${scratch}/STIMMRI/alct/statsfile.csv | tr '\t' ',' >${scratch}/STIMMRI/alct/statsfilenowhite.csv
 	    #rm ${scratch}/STIMMRI/alct/statsfile.csv
 	    #mv ${scratch}/STIMMRI/alct/statsfilenowhite.csv ${scratch}/STIMMRI/alct/statsfile.csv
-	    rm ${outdir_JLF}/statsfile_temp.csv ${outdir_JLF}/numstats.csv ${outdir_JLF}/stats.csv
+	    ##rm ${outdir_JLF}/statsfile_temp.csv ${outdir_JLF}/numstats.csv ${outdir_JLF}/stats.csv
 	done
+	#volume
+	for num in 71 72 73 75 76 630 631 632 91 92 16 24 14 15 72 85 4 5 6 7 10 11 12 13 17 18 25 26 28 30 91 43 44 45 46 49 50 51 52 53 54 57 58 60 62 92 630 631 632 ; do 
+	 labelledimage=$(echo "${outdir_JLF}/dkt_${TP}Labels.nii.gz")
+	 fslmaths ${labelledimage} -thr ${num} -uthr ${num} ${outdir_JLF}/${num}_mask.nii.gz
+	 fslmaths ${outdir_JLF}/${num}_mask.nii.gz -bin ${outdir_JLF}/${num}_mask.nii.gz
     done 
 done
