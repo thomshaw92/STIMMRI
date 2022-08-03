@@ -19,7 +19,7 @@ for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_001-10
 
     data_dir="${scratch}/bids_t1w_only/"
     atlas_dir="/data/lfs2/uqtshaw/STIMMRI/STIMMRI_ATLAS"
-    out_dir="${scratch}/alct/${subjName}_long_cortical_thickness"
+    out_dir="${scratch}/alct/${subjName}/${subjName}_long_cortical_thickness"
     atlasDir="/data/lfs2/uqtshaw/STIMMRI/mindboggle_all_data"
     #don't ask me why i called these like this
 
@@ -32,33 +32,36 @@ for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_001-10
     if [[ -e ${tp_1_t1w} && ! -e ${tp_2_t1w} && ! -e ${tp_3_t1w} ]] ; then
 	inputs="${tp_1_t1w}"
 	echo "only one timepoint (TP1) exists for ${subjName}, exiting"
-	echo ${subjName}_TP1 >> ${scratch}/STIMMRI/1TP_only_log.txt
+	echo ${subjName}_TP1 >> ${scratch}/1TP_only_log.txt
+	png_file=$(echo "${scratch}/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-01"*"/${subjName}_ses-01_acq-"*"T1wCorticalThicknessTiledMosaic.png")
     fi
     if [[ ! -e ${tp_1_t1w} && -e ${tp_2_t1w} && ! -e ${tp_3_t1w} ]] ; then
 	inputs="${tp_2_t1w}"
 	echo "only one timepoint (TP1) exists for ${subjName}, exiting"
-	echo ${subjName}_TP2 >> ${scratch}/STIMMRI/1TP_only_log.txt
+	echo ${subjName}_TP2 >> ${scratch}/1TP_only_log.txt
+	png_file=$(echo "${scratch}/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-02"*"/${subjName}_ses-02_acq-"*"T1wCorticalThicknessTiledMosaic.png")
     fi
     if [[ ! -e ${tp_1_t1w} && ! -e ${tp_2_t1w} && -e ${tp_3_t1w} ]] ; then
 	inputs="${tp_3_t1w}"
 	echo "only one timepoint (TP1) exists for ${subjName}, exiting"
-	echo ${subjName}_TP3 >> ${scratch}/STIMMRI/1TP_only_log.txt
+	echo ${subjName}_TP3 >> ${scratch}/1TP_only_log.txt
+	png_file=$(echo "${scratch}/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03"*"/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
     fi
     if [[ -e ${tp_1_t1w} && -e ${tp_2_t1w} && ! -e ${tp_3_t1w} ]] ; then
 	inputs="${tp_1_t1w} ${tp_2_t1w}"
-	png_file=$(echo "${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-02_acq-"*"T1wCorticalThicknessTiledMosaic.png")
+	png_file=$(echo "${scratch}/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-02"*"/${subjName}_ses-02_acq-"*"T1wCorticalThicknessTiledMosaic.png")
     fi
     if [[ -e ${tp_1_t1w} && ! -e ${tp_2_t1w} && -e ${tp_3_t1w} ]] ; then
 	inputs="${tp_1_t1w} ${tp_3_t1w}"
-	png_file=$(echo "${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
+	png_file=$(echo "${scratch}/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03"*"/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
     fi
     if [[ ! -e ${tp_1_t1w} && -e ${tp_2_t1w} && -e ${tp_3_t1w} ]] ; then
 	inputs="${tp_2_t1w} ${tp_3_t1w}"
-	png_file=$(echo "${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
+	png_file=$(echo "${scratch}/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03"*"/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
     fi
     if [[ -e ${tp_1_t1w} && -e ${tp_2_t1w} && -e ${tp_3_t1w} ]] ; then
 	inputs="${tp_1_t1w} ${tp_2_t1w} ${tp_3_t1w}"
-	png_file=$(echo "${scratch}/STIMMRI/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
+	png_file=$(echo "${scratch}/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-03"*"/${subjName}_ses-03_acq-"*"T1wCorticalThicknessTiledMosaic.png")
     fi
 
     #ANTS LCT 3TP
@@ -86,7 +89,7 @@ for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_001-10
 
     for TP in 01 02 03 ; do
 
-	outdir_JLF=${scratch}/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF
+	outdir_JLF=${scratch}/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF
 	dkt_labels_image=$(echo "${outdir_JLF}/dkt_${TP}Labels.nii.gz")
 	if [[ ! -e ${dkt_labels_image} ]] ; then
 	    mkdir -p ${outdir_JLF}
@@ -94,7 +97,7 @@ for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_001-10
 	    
 	    target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
 	    if [[ -e ${target_image} ]] ; then
-		command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt_${TP} -c 2 -j 32"
+		command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt_${TP} -c 2 -j 64"
 		
 		for i in {1..20} ;  do
 		    command="${command} -g ${atlasDir}/OASIS-TRT-20_volumes/OASIS-TRT-20-${i}/t1weighted_brain.nii.gz"
@@ -109,9 +112,10 @@ for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_001-10
 	for num in 1002 1003 1005 1006 1007 1008 1009 1010 1011 1012 1013 1014 1015 1016 1017 1018 1019 1020 1021 1022 1023 1025 1026 1027 1028 1029 1030 1031 1034 1035 2002 2003 2005 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2034 2035 ; do
 	    labelledimage=$(echo "${outdir_JLF}/dkt_${TP}Labels.nii.gz")
 	    if [[ -e ${labelledimage} ]] ; then
+		echo "${subjName}, ses ${TP}, label ${num}"
 		fslmaths ${labelledimage} -thr ${num} -uthr ${num} ${outdir_JLF}/${num}_mask.nii.gz && fslmaths ${outdir_JLF}/${num}_mask.nii.gz -bin ${outdir_JLF}/${num}_mask.nii.gz &
 	    fi
-	    cortical_thickness_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}*_run-1_T1wCorticalThickness.nii.gz")
+	    #cortical_thickness_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}*_run-1_T1wCorticalThickness.nii.gz")
 	    #echo "${subjName} ses-${TP} ${num}">> ${outdir_JLF}/numstats.csv
 	    #the stats are going to be min intensity, max intensity, mean of nonzero values, SD of nonzeroes
 	done
@@ -121,6 +125,9 @@ for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_001-10
 	    if [[ -e ${labelledimage} ]] ; then
 		fslmaths ${labelledimage} -thr ${num} -uthr ${num} ${outdir_JLF}/${num}_mask.nii.gz && fslmaths ${outdir_JLF}/${num}_mask.nii.gz -bin ${outdir_JLF}/${num}_mask.nii.gz &
 	    fi
-	done 
+	done
+	sleep 20s
     done
+    cd ${scratch}/alct/
+    #zip -r -0 ${subjName}.zip ${subjName} && cp ${subjName}.zip /winmounts/uqtshaw/data.cai.uq.edu.au/STIMMRI20-Q1876/data/derivatives/alct/ && rm ${subjName}.zip &
 done

@@ -9,11 +9,11 @@
 #rsync -v -a --prune-empty-dirs --include '*/' --include '*T1w.nii.gz' --exclude '*' ../STIMMRI_BIDS/ /scratch/project/uhfmri/STIMMRI/
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=64
 #subjName=$1
-for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_001-100.csv` ; do 
+for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_101-207.csv | tail -n 50` ; do 
     #singularity="singularity exec --bind /30days:/30days/ /home/uqtshaw/ants_2.3.4.sif"
     #module load singularity
     # local ANTs use is better - need to edit opts on scripts to tailor CPUs etc
-    scratch="/media/uqtshaw/BrainStimALCT2/STIMMRI/"
+    scratch="/media/uqtshaw/BrainStimALCT/STIMMRI/"
     mkdir -p ${scratch}/alct/${subjName}
     cd ${scratch}/alct/${subjName}
 
