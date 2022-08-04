@@ -7,10 +7,10 @@
 #collect the stats
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=32
 
-for subjName in sub-{001..100} ; do 
+for subjName in sub-{101..207} ; do 
     #singularity="singularity exec --bind /30days:/30days/ /home/uqtshaw/ants_2.3.4.sif"
     #module load singularity
-    scratch="/media/uqtshaw/BrainStimALCT2/"
+    scratch="/media/uqtshaw/BrainStimALCT/"
     mkdir -p ${scratch}/STIMMRI/alct/${subjName}
     cd ${scratch}/STIMMRI/alct/${subjName}
 
