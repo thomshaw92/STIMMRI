@@ -126,6 +126,7 @@ for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_101-20
 		fslmaths ${labelledimage} -thr ${num} -uthr ${num} ${outdir_JLF}/${num}_mask.nii.gz && fslmaths ${outdir_JLF}/${num}_mask.nii.gz -bin ${outdir_JLF}/${num}_mask.nii.gz &
 	    fi
 	done 
+	sleep 1m
     done
     cd ${scratch}/alct/
     #zip -r -0 ${subjName}.zip ${subjName} && cp ${subjName}.zip /winmounts/uqtshaw/data.cai.uq.edu.au/STIMMRI20-Q1876/data/derivatives/alct/ && rm ${subjName}.zip &
