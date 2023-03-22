@@ -9,18 +9,18 @@
 #rsync -v -a --prune-empty-dirs --include '*/' --include '*T1w.nii.gz' --exclude '*' ../STIMMRI_BIDS/ /scratch/project/uhfmri/STIMMRI/
 export ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=64
 #subjName=$1
-for subjName in `cat /data/lfs2/uqtshaw/STIMMRI/scripts/STIMMRI/subjnames_001-100.csv` ; do 
+for subjName in sub-009 sub-054 sub-092 sub-152 ; do 
     #singularity="singularity exec --bind /30days:/30days/ /home/uqtshaw/ants_2.3.4.sif"
     #module load singularity
     # local ANTs use is better - need to edit opts on scripts to tailor CPUs etc
-    scratch="/media/uqtshaw/BrainStimALCT2/STIMMRI/"
+    scratch="/90days/uqtshaw/t1_rerun_Mar23/"
     mkdir -p ${scratch}/alct/${subjName}
     cd ${scratch}/alct/${subjName}
 
-    data_dir="${scratch}/bids_t1w_only/"
-    atlas_dir="/data/lfs2/uqtshaw/STIMMRI/STIMMRI_ATLAS"
+    data_dir="${scratch}/"
+    atlas_dir="/90days/uqtshaw/STIMMRI_ATLAS"
     out_dir="${scratch}/alct/${subjName}_long_cortical_thickness"
-    atlasDir="/data/lfs2/uqtshaw/STIMMRI/mindboggle_all_data"
+    atlasDir="/90days/uqtshaw/mindboggle_all_data"
     #don't ask me why i called these like this
 
    ########################## 
