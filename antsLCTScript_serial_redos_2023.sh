@@ -13,11 +13,11 @@ for subjName in sub-009 sub-054 sub-092 sub-152 ; do
     #singularity="singularity exec --bind /30days:/30days/ /home/uqtshaw/ants_2.3.4.sif"
     #module load singularity
     # local ANTs use is better - need to edit opts on scripts to tailor CPUs etc
-    scratch="/90days/uqtshaw/t1_rerun_Mar23/"
+    scratch="/90days/uqtshaw/t1_rerun_Mar23"
     mkdir -p ${scratch}/alct/${subjName}
     cd ${scratch}/alct/${subjName}
 
-    data_dir="${scratch}/"
+    data_dir="${scratch}"
     atlas_dir="/90days/uqtshaw/STIMMRI_ATLAS"
     out_dir="${scratch}/alct/${subjName}_long_cortical_thickness"
     atlasDir="/90days/uqtshaw/mindboggle_all_data"
@@ -86,13 +86,13 @@ for subjName in sub-009 sub-054 sub-092 sub-152 ; do
 
     for TP in 01 02 03 ; do
 
-	outdir_JLF=${scratch}/STIMMRI/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF
+	outdir_JLF=${scratch}/alct/${subjName}/${subjName}_ses-${TP}_DKT_JLF
 	dkt_labels_image=$(echo "${outdir_JLF}/dkt_${TP}Labels.nii.gz")
 	if [[ ! -e ${dkt_labels_image} ]] ; then
+		echo "dkt labels image does not exist, running JLF"
 	    mkdir -p ${outdir_JLF}
 	    cd ${outdir_JLF}
-	    
-	    target_image=$(echo "${out_dir}/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
+	    target_image=$(echo "${scratch}/alct/${subjName}/${subjName}_long_cortical_thickness/${subjName}_ses-${TP}_"*"/${subjName}_ses-${TP}_"*"T1wExtractedBrain0N4.nii.gz")
 	    if [[ -e ${target_image} ]] ; then
 		command="antsJointLabelFusion.sh -d 3 -t ${target_image} -x or -o dkt_${TP} -c 2 -j 32"
 		
@@ -102,6 +102,10 @@ for subjName in sub-009 sub-054 sub-092 sub-152 ; do
 		done
 		
 		$command
+		else
+		echo "target image does not exist, skipping JLF"
+		echo "target image was called ${target_image}"
+		ls $target_image
 	    fi
 	fi
 	#collect some stats - add extra regions
