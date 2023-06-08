@@ -1,88 +1,45 @@
 import os
-import numpy as np
-import matplotlib.pyplot as plt
-import nibabel as nib
 import argparse
-from matplotlib.colors import ListedColormap
+import nibabel as nib
+import numpy as np
+from scipy.ndimage import gaussian_filter, binary_dilation, binary_erosion
 
-def main(input_file, label_file, output_dir):
-    # Load input and label images
+def main(input_file, labels_file, output_dir):
+    # Load input image and labels
     t1w_img = nib.load(input_file)
+    labels_img = nib.load(labels_file)
     t1w_data = t1w_img.get_fdata()
+    labels_data = labels_img.get_fdata()
 
-    label_img = nib.load(label_file)
-    labels_data = label_img.get_fdata()
+    # Define labels of interest
+    labels_of_interest = [1020, 2020, 1018, 2018, 1027, 2027, 1003, 2003, 1028, 2028, 1024, 2024]
 
-    # Threshold label map
-    labels_data[labels_data < 1000] = 0  # Set voxels with value < 1000 to zero
-    thresholded_img = nib.Nifti1Image(labels_data, label_img.affine, label_img.header)
-    nib.save(thresholded_img, os.path.join(output_dir, 'jlf_thresholdedlabels.nii.gz'))
+    # Prepare output data arrays
+    thresholded_data_with_other = np.where(np.isin(labels_data, labels_of_interest), labels_data, 10)
+    thresholded_data_no_other = np.where(np.isin(labels_data, labels_of_interest), labels_data, 0)
+    
+    # Create binary masks for each label of interest, smooth them, calculate contours and replace them in the output data
+    for label in labels_of_interest:
+        binary_mask = labels_data == label
+        smoothed_mask = gaussian_filter(binary_mask.astype(float), sigma=0.5) > 0.5
+        contours = binary_dilation(smoothed_mask) ^ binary_erosion(smoothed_mask)
+        thresholded_data_with_other[contours] = label
+        thresholded_data_no_other[contours] = label
 
-    # Custom colour map
-    colors = [(251/255, 180/255, 174/255),
-              (179/255, 205/255, 227/255),
-              (204/255, 235/255, 197/255),
-              (222/255, 203/255, 228/255),
-              (254/255, 217/255, 166/255),
-              (255/255, 255/255, 204/255)]
-    cmap = ListedColormap(colors)
-
-    # Create directories
-    os.makedirs(os.path.join(output_dir, '2D_images_sag'), exist_ok=True)
-    os.makedirs(os.path.join(output_dir, '2D_images_cor'), exist_ok=True)
-    os.makedirs(os.path.join(output_dir, '2D_images_axi'), exist_ok=True)
-
-    # Determine which slices to display (central 85%)
-    num_slices_sag = t1w_data.shape[0]
-    num_slices_cor = t1w_data.shape[1]
-    num_slices_axi = t1w_data.shape[2]
-
-    start_sag = int(num_slices_sag * 0.075)
-    end_sag = int(num_slices_sag * 0.925)
-    slices_sag = np.arange(start_sag, end_sag)
-
-    start_cor = int(num_slices_cor * 0.075)
-    end_cor = int(num_slices_cor * 0.925)
-    slices_cor = np.arange(start_cor, end_cor)
-
-    start_axi = int(num_slices_axi * 0.075)
-    end_axi = int(num_slices_axi * 0.925)
-    slices_axi = np.arange(start_axi, end_axi)
-
-    # Generate 2D images in each orientation
-    # Sagittal
-    for s in slices_sag:
-        fig, ax = plt.subplots(1, 1, figsize=(10, 10))
-        ax.imshow(t1w_data[s, :, :], cmap='gray', alpha=1)
-        ax.imshow(cmap(labels_data[s, :, :]), alpha=0.6)
-        plt.axis('off')
-        plt.savefig(os.path.join(output_dir, '2D_images_sag', f'sag_{s}.png'))
-        plt.close()
-
-    # Coronal
-    for s in slices_cor:
-        fig, ax = plt.subplots(1, 1, figsize=(10, 10))
-        ax.imshow(t1w_data[:, s, :], cmap='gray', alpha=1)
-        ax.imshow(cmap(labels_data[:, s, :]), alpha=0.6)
-        plt.axis('off')
-        plt.savefig(os.path.join(output_dir, '2D_images_cor', f'cor_{s}.png'))
-        plt.close()
-
-    # Axial
-    for s in slices_axi:
-        fig, ax = plt.subplots(1, 1, figsize=(10, 10))
-        ax.imshow(t1w_data[:, :, s], cmap='gray', alpha=1)
-        ax.imshow(cmap(labels_data[:, :, s]), alpha=0.6)
-        plt.axis('off')
-        plt.savefig(os.path.join(output_dir, '2D_images_axi', f'axi_{s}.png'))
-        plt.close()
-
+    # Create new Nifti images
+    thresholded_img_with_other = nib.Nifti1Image(thresholded_data_with_other, t1w_img.affine, t1w_img.header)
+    thresholded_img_no_other = nib.Nifti1Image(thresholded_data_no_other, t1w_img.affine, t1w_img.header)
+    
+    # Save the output images
+    nib.save(thresholded_img_with_other, os.path.join(output_dir, 'thresholded_image_with_other_labels.nii.gz'))
+    nib.save(thresholded_img_no_other, os.path.join(output_dir, 'thresholded_image_no_other_labels.nii.gz'))
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Generate 2D images from 3D T1w MRI and label maps.')
-    parser.add_argument('-i', '--input', type=str, required=True, help='Path to input T1w image.')
-    parser.add_argument('-l', '--labels', type=str, required=True, help='Path to label image.')
-    parser.add_argument('-o', '--output_dir', type=str, required=True, help='Path to output directory.')
+    parser = argparse.ArgumentParser(description='Generate Nifti images with smoothed segmentations and thresholded labels.')
+    parser.add_argument('-i', '--input', required=True, help='Input T1-weighted Nifti image.')
+    parser.add_argument('-l', '--labels', required=True, help='Label Nifti image.')
+    parser.add_argument('-o', '--output_dir', required=True, help='Output directory for the generated images.')
+    
     args = parser.parse_args()
-
+    
     main(args.input, args.labels, args.output_dir)
